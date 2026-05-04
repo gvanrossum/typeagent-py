@@ -64,6 +64,14 @@ def _ps_script(amplitude: int | None) -> str:
     return script
 
 
+def _ping(script: str) -> None:
+    """Run one keep-alive ping via PowerShell."""
+    subprocess.run(
+        ["powershell.exe", "-NoProfile", "-Command", script],
+        timeout=30,
+    )
+
+
 def keep_alive(
     interval: float = 60.0, amplitude: int | None = None
 ) -> None:
@@ -76,23 +84,54 @@ def keep_alive(
     )
     try:
         while True:
-            subprocess.run(
-                ["powershell.exe", "-NoProfile", "-Command", script],
-                timeout=30,
-            )
+            _ping(script)
             time.sleep(interval)
     except KeyboardInterrupt:
         print("\nStopped.", flush=True)
 
 
+def keep_alive_for_command(
+    command: list[str],
+    interval: float = 60.0,
+    amplitude: int | None = None,
+) -> int:
+    """Run command, keeping screen alive until it exits. Returns exit code."""
+    script = _ps_script(amplitude)
+    wiggle_msg = f", wiggle {amplitude}px" if amplitude else ""
+    print(
+        f"Running: {' '.join(command)}",
+        flush=True,
+    )
+    print(
+        f"Keeping alive (every {interval}s{wiggle_msg}) until process exits.",
+        flush=True,
+    )
+    proc = subprocess.Popen(command)
+    try:
+        while True:
+            _ping(script)
+            try:
+                proc.wait(timeout=interval)
+                break
+            except subprocess.TimeoutExpired:
+                pass
+    except KeyboardInterrupt:
+        proc.terminate()
+        proc.wait()
+        print("\nInterrupted.", flush=True)
+    return proc.returncode or 0
+
+
 if __name__ == "__main__":
     import argparse
+    import sys
 
     parser = argparse.ArgumentParser(
-        description="Prevent screen lock by wiggling the mouse (WSL)."
+        description="Prevent screen lock (WSL). Optionally wraps a command.",
+        usage="%(prog)s [options] [-- command ...]",
     )
     parser.add_argument(
-        "-i", "--interval", type=float, default=60.0, help="Seconds between wiggles"
+        "-i", "--interval", type=float, default=60.0, help="Seconds between pings"
     )
     parser.add_argument(
         "-w", "--wiggle", action="store_true", help="Also wiggle the mouse"
@@ -100,5 +139,18 @@ if __name__ == "__main__":
     parser.add_argument(
         "-a", "--amplitude", type=int, default=20, help="Pixel amplitude (with --wiggle)"
     )
+    parser.add_argument(
+        "command", nargs=argparse.REMAINDER, help="Command to run (after --)"
+    )
     args = parser.parse_args()
-    keep_alive(args.interval, args.amplitude if args.wiggle else None)
+    amp = args.amplitude if args.wiggle else None
+
+    # Strip leading "--" from command if present
+    cmd = args.command
+    if cmd and cmd[0] == "--":
+        cmd = cmd[1:]
+
+    if cmd:
+        sys.exit(keep_alive_for_command(cmd, args.interval, amp))
+    else:
+        keep_alive(args.interval, amp)
