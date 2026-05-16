@@ -13,7 +13,9 @@ format: venv
 
 .PHONY: check
 check: venv
-	uv run ty check src tests tools examples
+	uv run --python 3.12 ty check src tests tools examples
+	uv run --python 3.13 ty check src tests tools examples
+	uv run --python 3.14 ty check src tests tools examples
 
 .PHONY: test
 test: venv
