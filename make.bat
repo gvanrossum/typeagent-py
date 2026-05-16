@@ -29,7 +29,7 @@ goto help
 if not exist ".venv\" call make.bat venv
 echo Formatting code...
 uv run isort src tests tools examples
-uv run black -tpy312 src tests tools examples
+uv run ruff format src tests tools examples
 goto end
 
 :check
@@ -73,7 +73,7 @@ goto end
 echo Creating virtual environment...
 uv sync -q
 uv run python --version
-uv run black --version
+uv run ruff --version
 uv run pyright --version
 uv run pytest --version
 goto end
