@@ -83,7 +83,7 @@ The storage system is now fully implemented and tested:
 
 - **Testing**: `make test` - run all tests  
 - **Type checking**: `make check` - type-check all files
-- **Formatting**: `make format` - reformat with black
+- **Formatting**: `make format` - reformat with ruff
 - **Environment**: Activate `.venv`, use `make clean venv` if needed
 - **Unified Testing**: `python -m pytest test/test_storage_providers_unified.py` - test both storage providers
 
@@ -181,7 +181,7 @@ Following the Python coding guidelines:
 - **Commands**:
   - `make test` - run all tests
   - `make check` - type-check all files
-  - `make format` - reformat with black
+    - `make format` - reformat with ruff
 - **Environment**: Activate `.venv`, use `make clean venv` if needed
 
 ## Step 1: Centralize Index Creation in Storage Provider ✅ DONE

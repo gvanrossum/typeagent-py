@@ -28,7 +28,7 @@ AGENTS.md. In all cases show what you added to AGENTS.md.
 - Use `make check` to type-check all files
 - Use `make test` to run all tests
 - Use `make check test` to run `make check` and if it passes also run `make test`
-- Use `make format` to format all files using `black`. Do this before reporting success.
+- Use `make format` to format all files using `ruff format` (with isort). Do this before reporting success.
 - When validating changes, first run `pytest` only on new/modified test files, then run `make format check test` once at the end.
 - While building `add_messages.py` before dedicated tests exist, skip running the full test suite; run full tests after those tests are added.
 - Keep ad-hoc and performance benchmarks under `tools/`, not `tests/`, so `make test` does not run them.

@@ -9,7 +9,7 @@ all: venv format check test build
 .PHONY: format
 format: venv
 	uv run isort src tests tools examples $(FLAGS)
-	uv run black -tpy312 src tests tools examples $(FLAGS)
+	uv run ruff format src tests tools examples $(FLAGS)
 
 .PHONY: check
 check: venv
@@ -67,7 +67,7 @@ venv: .venv
 .venv:
 	@echo "(If 'uv' fails with 'No such file or directory', try 'make install-uv')"
 	uv sync -q $(FLAGS)
-	uv run black --version
+	uv run ruff --version
 	@echo "(If 'pyright' fails with 'error while loading shared libraries: libatomic.so.1:', try 'make install-libatomic')"
 	uv run pyright --version
 	uv run pytest --version
@@ -97,7 +97,7 @@ help:
 	@echo "make help        # Help (this message)"
 	@echo "make             # Same as 'make all'"
 	@echo "make all         # venv, format, check, test, build"
-	@echo "make format      # Run isort and black"
+	@echo "make format      # Run isort and ruff format"
 	@echo "make check       # Run pyright"
 	@echo "make test        # Run pytest (tests are in tests/)"
 	@echo "make coverage    # Run tests with coverage"
