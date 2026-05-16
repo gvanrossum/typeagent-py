@@ -67,11 +67,18 @@ module-root = "src"
 asyncio_default_fixture_loop_scope = "function"
 testpaths = ["tests"]
 
-[tool.pyright]
-extraPaths = ["src", "tools"]
-reportUnusedVariable = true
-reportUnusedImport = true
-reportDuplicateImport = true
+[tool.ty.environment]
+extra-paths = ["src", "tools"]
+
+[tool.ty.rules]
+empty-body = "warn"
+invalid-argument-type = "warn"
+invalid-assignment = "warn"
+missing-typed-dict-key = "warn"
+no-matching-overload = "warn"
+unresolved-attribute = "warn"
+unsupported-operator = "warn"
+type-assertion-failure = "warn"
 
 [tool.ruff]
 line-length = 88
@@ -105,9 +112,9 @@ dev = [
   "logfire>=4.32.1",  # So 'make check' passes
   "msgraph-sdk>=1.56.0",
   "opentelemetry-instrumentation-httpx>=0.61b0",
-  "pyright>=1.1.409",
   "pytest>=9.0.3",
   "pytest-asyncio>=1.3.0",
   "pytest-mock>=3.15.1",
+  "ty>=0.0.37",
   "ruff>=0.11.12",
 ]

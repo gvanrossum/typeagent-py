@@ -13,8 +13,7 @@ format: venv
 
 .PHONY: check
 check: venv
-	uv run pyright --pythonversion 3.12 src tests tools examples
-	uv run pyright --pythonversion 3.14 src tests tools examples
+	uv run ty check src tests tools examples
 
 .PHONY: test
 test: venv
@@ -68,8 +67,7 @@ venv: .venv
 	@echo "(If 'uv' fails with 'No such file or directory', try 'make install-uv')"
 	uv sync -q $(FLAGS)
 	uv run ruff --version
-	@echo "(If 'pyright' fails with 'error while loading shared libraries: libatomic.so.1:', try 'make install-libatomic')"
-	uv run pyright --version
+	uv run ty version
 	uv run pytest --version
 
 .PHONY: sync
@@ -98,7 +96,7 @@ help:
 	@echo "make             # Same as 'make all'"
 	@echo "make all         # venv, format, check, test, build"
 	@echo "make format      # Run isort and ruff format"
-	@echo "make check       # Run pyright"
+	@echo "make check       # Run ty"
 	@echo "make test        # Run pytest (tests are in tests/)"
 	@echo "make coverage    # Run tests with coverage"
 	@echo "make build       # Build the wheel (under dist/)"

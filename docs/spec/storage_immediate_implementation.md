@@ -177,7 +177,7 @@ This scattered approach makes it difficult to:
 Following the Python coding guidelines:
 
 - **Testing**: Use `pytest`, `assert` statements, minimal mocking
-- **Type checking**: Use `pyright` (or Pylance in VS Code)
+- **Type checking**: Use `ty check` (or Pylance in VS Code)
 - **Commands**:
   - `make test` - run all tests
   - `make check` - type-check all files

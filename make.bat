@@ -35,7 +35,7 @@ goto end
 :check
 if not exist ".venv\" call make.bat venv
 echo Running type checks...
-uv run pyright src tests tools examples
+uv run ty check src tests tools examples
 goto end
 
 :test
@@ -74,7 +74,7 @@ echo Creating virtual environment...
 uv sync -q
 uv run python --version
 uv run ruff --version
-uv run pyright --version
+uv run ty version
 uv run pytest --version
 goto end
 

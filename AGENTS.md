@@ -22,7 +22,7 @@ AGENTS.md. In all cases show what you added to AGENTS.md.
 - If a term can refer to OS behavior or repository code behavior (for example, 'force quit'), prefer the in-repo meaning first and verify by searching the code.
 - To get API keys in ad-hoc code, call `load_dotenv()`
 - Use `pytest test` to run tests in test/
-- Use `pyright` to check type annotations in src/, tools/,  tests/, examples/
+- Use `ty check` to type-check src/, tools/, tests/, examples/
 - Ignore build/, dist/
 - You can also use the pylance extension for type checking in VS Code
 - Use `make check` to type-check all files
@@ -121,7 +121,7 @@ please follow these guidelines:
   Let errors bubble up naturally for proper error handling and debugging at higher levels.
 
 * **Code Validation**: Don't use `py_compile` for syntax checking.
-  Use `pyright` or `make check` instead for proper type checking and validation.
+  Use `ty check` or `make check` instead for proper type checking and validation.
 
 * **Deprecations**: Don't deprecate things -- just delete them and fix the usage sites.
   Don't create backward compatibility APIs or exports or whatever. Fix the usage sites.
