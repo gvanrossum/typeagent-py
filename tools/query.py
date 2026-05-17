@@ -16,14 +16,15 @@ import json
 import os
 import re
 import shlex
-import shutil
 import sys
 import typing
+from typing import Annotated, Literal
 
 from colorama import Fore
 from colorama import init as colorama_init
 from dotenv import load_dotenv
 import numpy as np
+import typer
 
 readline = None
 try:
@@ -60,6 +61,11 @@ from typeagent.knowpro.interfaces import (
 )
 from typeagent.podcasts import podcast
 from typeagent.storage.utils import create_storage_provider
+
+app = typer.Typer(
+    context_settings={"help_option_names": ["-h", "--help"]},
+)
+
 
 ### Output redirection for batch concurrency ###
 
@@ -546,13 +552,156 @@ async def handle_at_command(context: ProcessingContext, line: str) -> None:
 ### Main logic ###
 
 
-async def main():
+@app.command(no_args_is_help=True)
+async def main(
+    database: Annotated[
+        str, typer.Option("-d", "--database", help="Path to the SQLite database file")
+    ],
+    answer_results: Annotated[
+        str | None,
+        typer.Option(
+            help="Path to the Answer_results.json file (a list of questions and answers to test the full pipeline)"
+        ),
+    ] = None,
+    search_results: Annotated[
+        str | None,
+        typer.Option(
+            help="Path to the Search_results.json file (a list of intermediate results from stages 1, 2 and 3)"
+        ),
+    ] = None,
+    skip_counters: Annotated[
+        str, typer.Option(help="List of comma-separated questions to skip")
+    ] = "",
+    single_query: Annotated[
+        str | None,
+        typer.Option(
+            "--query",
+            help="Process a single query and exit (equivalent to echo 'query' | query.py)",
+        ),
+    ] = None,
+    verbose: Annotated[
+        bool,
+        typer.Option(
+            "-v", "--verbose", help="Show verbose startup information and timing logs"
+        ),
+    ] = False,
+    history_size: Annotated[
+        int,
+        typer.Option(
+            help="Number of recent Q&A pairs to keep for resolving pronouns/references (default: 5, 0 to disable)"
+        ),
+    ] = 5,
+    batch: Annotated[
+        bool, typer.Option(help="Run in batch mode, suppressing interactive prompts.")
+    ] = False,
+    offset: Annotated[
+        int, typer.Option(help="Number of initial Q/A pairs to skip (default none)")
+    ] = 0,
+    limit: Annotated[
+        int, typer.Option(help="Number of Q/A pairs to process (default all)")
+    ] = 0,
+    start: Annotated[
+        int,
+        typer.Option(
+            help="Do just this question (similar to --offset START-1 --limit 1)"
+        ),
+    ] = 0,
+    concurrency: Annotated[
+        int, typer.Option(help="Max concurrent queries in batch mode (default 10)")
+    ] = 10,
+    debug: Annotated[
+        Literal["none", "diff", "full"] | None,
+        typer.Option(
+            help="Default debug level: 'none' for no debug output, 'diff' for diff output, 'full' for full debug output."
+        ),
+    ] = None,
+    debug1: Annotated[
+        str | None,
+        typer.Option(
+            help="Debug level override for stage 1: like --debug; or 'skip' to skip stage 1."
+        ),
+    ] = None,
+    debug2: Annotated[
+        str | None,
+        typer.Option(
+            help="Debug level override for stage 2: like --debug; or 'skip' to skip stages 1-2."
+        ),
+    ] = None,
+    debug3: Annotated[
+        str | None,
+        typer.Option(
+            help="Debug level override for stage 3: like --debug; or 'nice' to print answer only."
+        ),
+    ] = None,
+    debug4: Annotated[
+        str | None,
+        typer.Option(
+            help="Debug level override for stage 4: like --debug; or 'nice' to print answer only."
+        ),
+    ] = None,
+    alt_schema: Annotated[
+        str | None,
+        typer.Option(
+            help="Path to alternate schema file for query translator (modifies stage 1)."
+        ),
+    ] = None,
+    show_schema: Annotated[
+        bool, typer.Option(help="Show the TypeScript schema computed by typechat.")
+    ] = False,
+    logfire: Annotated[
+        bool, typer.Option(help="Upload log events to Pydantic's Logfire server")
+    ] = False,
+) -> None:
     load_dotenv()
     colorama_init(autoreset=True)
 
-    parser = make_arg_parser("TypeAgent Query Tool")
-    args = parser.parse_args()
+    class Args:
+        def __init__(self) -> None:
+            self.database = database
+            self.answer_results = answer_results
+            self.search_results = search_results
+            self.skip_counters = skip_counters
+            self.query = single_query
+            self.verbose = verbose
+            self.history_size = history_size
+            self.batch = batch
+            self.offset = offset
+            self.limit = limit
+            self.start = start
+            self.concurrency = concurrency
+            self.debug = debug
+            self.debug1: str | None = debug1
+            self.debug2: str | None = debug2
+            self.debug3: str | None = debug3
+            self.debug4: str | None = debug4
+            self.alt_schema = alt_schema
+            self.show_schema = show_schema
+            self.logfire = logfire
+
+    args = Args()
+
+    class FakeParser:
+        def exit(self, code: int, message: str = "") -> None:
+            if message:
+                print(message, end="")
+            raise SystemExit(code)
+
+    parser = FakeParser()
     fill_in_debug_defaults(parser, args)
+
+    # After fill_in_debug_defaults, debug1-4 are guaranteed to be set
+    args.debug1 = typing.cast(
+        typing.Literal["none", "diff", "full", "skip"], args.debug1
+    )
+    args.debug2 = typing.cast(
+        typing.Literal["none", "diff", "full", "skip"], args.debug2
+    )
+    args.debug3 = typing.cast(
+        typing.Literal["none", "diff", "full", "nice"], args.debug3
+    )
+    args.debug4 = typing.cast(
+        typing.Literal["none", "diff", "full", "nice"], args.debug4
+    )
 
     if args.logfire:
         utils.setup_logfire()
@@ -983,154 +1132,7 @@ def prsep():
 ### CLI processing ###
 
 
-def make_arg_parser(description: str) -> argparse.ArgumentParser:
-    line_width = min(144, shutil.get_terminal_size().columns)
-    parser = argparse.ArgumentParser(
-        description=description,
-        formatter_class=lambda *a, **b: argparse.HelpFormatter(
-            *a, **b, max_help_position=35 if line_width >= 100 else 28, width=line_width
-        ),
-    )
-
-    explain_qa = "a list of questions and answers to test the full pipeline"
-    parser.add_argument(
-        "--answer-results",
-        type=str,
-        default=None,
-        help=f"Path to the Answer_results.json file ({explain_qa})",
-    )
-    explain_sr = "a list of intermediate results from stages 1, 2 and 3"
-    parser.add_argument(
-        "--search-results",
-        type=str,
-        default=None,
-        help=f"Path to the Search_results.json file ({explain_sr})",
-    )
-    parser.add_argument(
-        "--skip-counters",
-        type=str,
-        default="",
-        help="List of comma-separated questions to skip",
-    )
-    parser.add_argument(
-        "-d",
-        "--database",
-        type=str,
-        required=True,
-        help="Path to the SQLite database file",
-    )
-    parser.add_argument(
-        "--query",
-        type=str,
-        default=None,
-        help="Process a single query and exit (equivalent to echo 'query' | query.py)",
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="store_true",
-        help="Show verbose startup information and timing logs",
-    )
-    parser.add_argument(
-        "--history-size",
-        type=int,
-        default=5,
-        help="Number of recent Q&A pairs to keep for resolving pronouns/references "
-        "(default: 5, 0 to disable)",
-    )
-
-    batch = parser.add_argument_group("Batch mode options")
-    batch.add_argument(
-        "--batch",
-        action="store_true",
-        help="Run in batch mode, suppressing interactive prompts.",
-    )
-    batch.add_argument(
-        "--offset",
-        type=int,
-        default=0,
-        help="Number of initial Q/A pairs to skip (default none)",
-    )
-    batch.add_argument(
-        "--limit",
-        type=int,
-        default=0,
-        help="Number of Q/A pairs to process (default all)",
-    )
-    batch.add_argument(
-        "--start",
-        type=int,
-        default=0,
-        help="Do just this question (similar to --offset START-1 --limit 1)",
-    )
-    batch.add_argument(
-        "--concurrency",
-        type=int,
-        default=10,
-        help="Max concurrent queries in batch mode (default 10)",
-    )
-
-    debug = parser.add_argument_group("Debug options")
-    debug.add_argument(
-        "--debug",
-        type=str,
-        default=None,
-        choices=["none", "diff", "full"],
-        help="Default debug level: 'none' for no debug output, 'diff' for diff output, "
-        "'full' for full debug output.",
-    )
-    arg_helper = lambda key: typing.get_args(ProcessingContext.__annotations__[key])
-    debug.add_argument(
-        "--debug1",
-        type=str,
-        default=None,
-        choices=arg_helper("debug1"),
-        help="Debug level override for stage 1: like --debug; or 'skip' to skip stage 1.",
-    )
-    debug.add_argument(
-        "--debug2",
-        type=str,
-        default=None,
-        choices=arg_helper("debug2"),
-        help="Debug level override for stage 2: like --debug; or 'skip' to skip stages 1-2.",
-    )
-    debug.add_argument(
-        "--debug3",
-        type=str,
-        default=None,
-        choices=arg_helper("debug3"),
-        help="Debug level override for stage 3: like --debug; or 'nice' to print answer only.",
-    )
-    debug.add_argument(
-        "--debug4",
-        type=str,
-        default=None,
-        choices=arg_helper("debug4"),
-        help="Debug level override for stage 4: like --debug; or 'nice' to print answer only.",
-    )
-    debug.add_argument(
-        "--alt-schema",
-        type=str,
-        default=None,
-        help="Path to alternate schema file for query translator (modifies stage 1).",
-    )
-    debug.add_argument(
-        "--show-schema",
-        action="store_true",
-        help="Show the TypeScript schema computed by typechat.",
-    )
-    debug.add_argument(
-        "--logfire",
-        action="store_true",
-        help="Upload log events to Pydantic's Logfire server",
-    )
-
-    return parser
-
-
-def fill_in_debug_defaults(
-    parser: argparse.ArgumentParser, args: argparse.Namespace
-) -> None:
+def fill_in_debug_defaults(parser: typing.Any, args: typing.Any) -> None:
     # In batch mode, defaults are diff, diff, diff, diff.
     # In interactive mode they are none, none, none, nice.
     if args.query is not None and args.batch:
@@ -1433,7 +1435,7 @@ async def equality_score(context: ProcessingContext, a: str, b: str) -> float:
 
 if __name__ == "__main__":
     try:
-        asyncio.run(main())
+        asyncio.run(app())
     except (KeyboardInterrupt, BrokenPipeError):
         print()
         sys.exit(1)
