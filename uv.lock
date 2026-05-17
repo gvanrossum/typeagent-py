@@ -2426,6 +2426,7 @@ dependencies = [
     { name = "stamina" },
     { name = "tiktoken" },
     { name = "typechat" },
+    { name = "typer" },
     { name = "webvtt-py" },
 ]
 
@@ -2470,6 +2471,7 @@ requires-dist = [
     { name = "stamina", specifier = ">=26.1.0" },
     { name = "tiktoken", specifier = ">=0.12.0" },
     { name = "typechat", specifier = ">=0.0.4" },
+    { name = "typer", specifier = ">=0.24.1" },
     { name = "webvtt-py", specifier = ">=0.5.1" },
 ]
 provides-extras = ["logfire"]
