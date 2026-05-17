@@ -1,36 +1,35 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-import argparse
-import glob
 import os
 import re
 import statistics
 import sys
+from typing import Annotated, Literal
 
 from colorama import Fore
 from colorama import init as colorama_init
 from colorama import Style
+import typer
+
+app = typer.Typer(context_settings={"help_option_names": ["-h", "--help"]})
 
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Compare evaluation results from multiple files."
-    )
-    parser.add_argument(
-        "--color",
-        choices=["auto", "always", "never"],
-        default="auto",
-        help="Control color output. Default 'auto' uses colors if stdout is a terminal.",
-    )
-    parser.add_argument(
-        "files",
-        nargs="*",
-    )
-    args = parser.parse_args()
-
+@app.command(no_args_is_help=True)
+def main(
+    files: Annotated[
+        list[str],
+        typer.Argument(help="Evaluation result files to compare."),
+    ],
+    color: Annotated[
+        Literal["auto", "always", "never"],
+        typer.Option(
+            help="Control color output. Default 'auto' uses colors if stdout is a terminal."
+        ),
+    ] = "auto",
+) -> None:
     # Initialize colorama according to --color.
-    match args.color:
+    match color:
         case "auto":
             colorama_init(strip=not sys.stdout.isatty())
         case "always":
@@ -38,9 +37,8 @@ def main():
         case "never":
             colorama_init(strip=True)
         case _:
-            raise ValueError(f"Invalid color option: {args.color}")
+            raise ValueError(f"Invalid color option: {color}")
 
-    files = args.files or sorted(glob.glob("evals/eval-*.txt"))
     table = {}  # {file: {counter: score, ...}, ...}
     questions = {}  # {counter: question, ...}
 
@@ -113,7 +111,7 @@ def main():
     print(f"--skip-counters={','.join(str(x) for x in good_counters)}")
 
 
-def print_header(all_files):
+def print_header(all_files: list[str]) -> None:
     print("    ", end="")
     for file in all_files:
         base = os.path.basename(file)
@@ -126,10 +124,10 @@ def print_header(all_files):
     print()
 
 
-def print_footer(all_files):
+def print_footer(all_files: list[str]) -> None:
     for i, file in reversed(list(enumerate(all_files))):
         print("     |" * i + "     " + os.path.basename(file))
 
 
 if __name__ == "__main__":
-    main()
+    app()
