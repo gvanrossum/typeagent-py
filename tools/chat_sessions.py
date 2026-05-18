@@ -1022,7 +1022,8 @@ def smart_pager(pager_cmd: str) -> Iterator[None]:
     finally:
         sys.stdout = old_stdout
     try:
-        proc.stdin.close()  # type: ignore[union-attr]
+        if proc.stdin is not None:
+            proc.stdin.close()
     except OSError:
         pass
     proc.wait()

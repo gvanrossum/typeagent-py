@@ -4,7 +4,7 @@
 
 import argparse
 import asyncio
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
@@ -133,7 +133,7 @@ class AzPIMClient:
                     "duration": options["expirationDuration"],
                     "end_date_time": None,
                 },
-                "start_date_time": options.get("startDateTime", datetime.utcnow()),
+                "start_date_time": options.get("startDateTime", datetime.now(timezone.utc)),
             },
             "justification": "self elevate from typeagent script",
         }

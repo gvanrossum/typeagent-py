@@ -21,6 +21,7 @@ from datetime import datetime, UTC
 import json
 from pathlib import Path
 from statistics import mean
+from typing import cast
 
 from benchmark_embeddings import (
     ANSWER_EMBEDDING_SOURCE,
@@ -253,6 +254,7 @@ def write_markdown_summary(path: Path, summaries: list[dict[str, object]]) -> No
     for summary in summaries:
         recommended_row = summary["recommended_row"]
         assert isinstance(recommended_row, dict)
+        recommended_row = cast(dict[str, float], recommended_row)
         lines.append(
             "| "
             f"{summary['resolved_model_name']} | "
