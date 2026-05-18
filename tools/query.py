@@ -1,6 +1,8 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
+from pygments.token import Literal
+
 __version__ = "0.3"
 
 ### Imports ###
@@ -262,6 +264,7 @@ async def cmd_debug(context: ProcessingContext, args: list[str]) -> None:
     if not ns.reset and not ns.items:
         return
 
+    debug_values: dict[str, typing.Literal["none", "diff", "full", "skip", "nice"]]
     if ns.reset:
         debug_values = {
             "debug1": "none",
@@ -279,7 +282,7 @@ async def cmd_debug(context: ProcessingContext, args: list[str]) -> None:
         }
 
     if ns.items:
-        updates: dict[str, str] = {}
+        updates: dict[str, typing.Literal["none", "diff", "full", "skip", "nice"]] = {}
         for item in ns.items:
             pair = item.split("=", maxsplit=1)
             if len(pair) != 2:
@@ -300,6 +303,7 @@ async def cmd_debug(context: ProcessingContext, args: list[str]) -> None:
                     return
                 updates[flag] = value
 
+        value: typing.Literal["none", "diff", "full", "skip", "nice"]
         for flag, value in updates.items():
             allowed = ProcessingContext.__annotations__[flag].__args__  # DRY
             if value not in allowed:
@@ -402,7 +406,7 @@ async def cmd_stage(context: ProcessingContext, args: list[str]) -> None:
 
     print("Stage 3 results:")
     if ns.diff and record and "results" in record:
-        expected3 = typing.cast(list[RawSearchResultData], record["results"])
+        expected3 = record["results"]
         compare_results(expected3, search_results)
     for sr in search_results:
         await print_result(sr, context.query_context.conversation)
@@ -1218,8 +1222,7 @@ async def print_result[TMessage: IMessage, TIndex: ITermToSemanticRefIndex](
                     msg_ord = sem_ref.range.start.message_ordinal
                     msg = await conversation.messages.get_item(msg_ord)
                     qprint(
-                        f"({score:5.1f}) M={msg_ord}: "
-                        f"S={summarize_knowledge(sem_ref)}"
+                        f"({score:5.1f}) M={msg_ord}: S={summarize_knowledge(sem_ref)}"
                     )
 
 
