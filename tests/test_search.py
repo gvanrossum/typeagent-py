@@ -3,6 +3,8 @@
 
 """Tests for knowpro/search.py — SearchOptions, ConversationSearchResult."""
 
+from typing import Any, cast
+
 import pytest
 
 from typeagent.knowpro.interfaces import (
@@ -84,13 +86,13 @@ def test_is_conversation_searchable_true() -> None:
 
 def test_is_conversation_searchable_no_index() -> None:
     conv = FakeConversation(has_secondary_indexes=False)
-    conv.semantic_ref_index = None
+    cast(Any, conv).semantic_ref_index = None
     assert is_conversation_searchable(conv) is False
 
 
 def test_is_conversation_searchable_no_semrefs() -> None:
     conv = FakeConversation(has_secondary_indexes=False)
-    conv.semantic_refs = None  # type: ignore[assignment]
+    cast(Any, conv).semantic_refs = None
     assert is_conversation_searchable(conv) is False
 
 
@@ -103,7 +105,7 @@ def test_is_conversation_searchable_no_semrefs() -> None:
 async def test_search_conversation_knowledge_non_searchable_returns_none() -> None:
     """When the conversation has no semantic ref index, result should be None."""
     conv = FakeConversation(has_secondary_indexes=False)
-    conv.semantic_ref_index = None
+    cast(Any, conv).semantic_ref_index = None
 
     group = SearchTermGroup(
         boolean_op="or",

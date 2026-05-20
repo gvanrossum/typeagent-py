@@ -7,9 +7,8 @@ from pytest_mock import MockerFixture
 
 from typeagent.aitools.embeddings import CachingEmbeddingModel, IEmbeddingModel
 
-from conftest import (
-    embedding_model,  # type: ignore  # Magic, prevents side effects of mocking
-)
+# Magic, prevents side effects of mocking.
+from conftest import embedding_model
 
 
 @pytest.mark.asyncio

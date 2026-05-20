@@ -20,6 +20,7 @@ async def test_why_is_sky_blue(really_needs_auth: None):
     result = await model.complete("why is the sky blue?")
     assert isinstance(result, typechat.Success), f"Chat completion failed: {result}"
     msg = result.value
+    assert isinstance(msg, str)
     assert msg, "Chat agent didn't respond"
 
     print(f"Chat agent response: {msg}")

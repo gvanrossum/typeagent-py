@@ -80,6 +80,7 @@ async def sampling_callback(
         text = result.value
     else:
         text = result.message
+    text = str(text)
 
     return CreateMessageResult(
         role="assistant",

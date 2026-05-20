@@ -1,6 +1,8 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
+from typing import Any, cast
+
 import pytest
 
 from typeagent.knowpro.collections import (
@@ -99,7 +101,7 @@ def create_searchable_conversation(
     if has_index:
         conv.semantic_ref_index = FakeTermIndex(term_to_refs)
     else:
-        conv.semantic_ref_index = None
+        cast(Any, conv).semantic_ref_index = None
 
     return conv
 
@@ -153,8 +155,11 @@ class TestTermLookup:
         def high_score_filter(semantic_ref, scored_ref):
             return scored_ref.score > 0.8
 
+        semantic_ref_index = searchable_conversation.semantic_ref_index
+        assert semantic_ref_index is not None
+
         results = await lookup_term_filtered(
-            searchable_conversation.semantic_ref_index,  # type: ignore[arg-type]
+            semantic_ref_index,
             term,
             searchable_conversation.semantic_refs,
             high_score_filter,
@@ -175,8 +180,11 @@ class TestTermLookup:
         def any_filter(semantic_ref, scored_ref):
             return True
 
+        semantic_ref_index = searchable_conversation.semantic_ref_index
+        assert semantic_ref_index is not None
+
         results = await lookup_term_filtered(
-            searchable_conversation.semantic_ref_index,  # type: ignore[arg-type]
+            semantic_ref_index,
             term,
             searchable_conversation.semantic_refs,
             any_filter,
@@ -189,8 +197,11 @@ class TestTermLookup:
         """Test lookup_term function with no scope."""
         term = Term("test")
 
+        semantic_ref_index = searchable_conversation.semantic_ref_index
+        assert semantic_ref_index is not None
+
         results = await lookup_term(
-            searchable_conversation.semantic_ref_index,  # type: ignore[arg-type]
+            semantic_ref_index,
             term,
             searchable_conversation.semantic_refs,
         )
@@ -213,8 +224,11 @@ class TestTermLookup:
         )
         ranges_in_scope = TextRangesInScope([range_collection])
 
+        semantic_ref_index = searchable_conversation.semantic_ref_index
+        assert semantic_ref_index is not None
+
         results = await lookup_term(
-            searchable_conversation.semantic_ref_index,  # type: ignore[arg-type]
+            semantic_ref_index,
             term,
             searchable_conversation.semantic_refs,
             ranges_in_scope,

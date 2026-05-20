@@ -63,7 +63,8 @@ def test_match_accumulator_get_matches_with_min_hit_count():
     accumulator.add("example1", score=0.5)
     accumulator.add("example2", score=2.0)
 
-    matches = list(accumulator._matches_with_min_hit_count(min_hit_count=2))  # type: ignore  # Need an internal method.
+    # Need an internal method.
+    matches = list(accumulator._matches_with_min_hit_count(min_hit_count=2))
     assert len(matches) == 1
     assert matches[0].value == "example1"
 
@@ -429,7 +430,7 @@ def test_match_accumulator_non_exact_filtered_by_min_hit_count():
     accumulator.add("exact_term", score=1.0, is_exact_match=True)
     accumulator.add("related_term", score=0.9, is_exact_match=False)
 
-    matches = list(accumulator._matches_with_min_hit_count(min_hit_count=1))  # type: ignore
+    matches = list(accumulator._matches_with_min_hit_count(min_hit_count=1))
     assert len(matches) == 1
     assert matches[0].value == "exact_term"
 

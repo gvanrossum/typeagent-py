@@ -39,7 +39,8 @@ class TestGetTimeRangeForConversation:
         conv = FakeConversation(messages=msgs)
         result = await get_time_range_for_conversation(conv)
         assert result is not None
-        assert result.start < result.end  # type: ignore[operator]
+        assert result.end is not None
+        assert result.start < result.end
 
 
 class TestGetTimeRangePromptSection:

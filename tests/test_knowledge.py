@@ -1,6 +1,8 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
+from typing import cast
+
 import pytest
 
 from typechat import Failure, Result, Success
@@ -61,9 +63,11 @@ async def test_extract_knowledge_from_text_batch(
 
     assert len(results) == 3
     assert isinstance(results[0], Success)
-    assert results[0].value.topics[0] == "text 1"
+    first_result = cast(Success[kplib.KnowledgeResponse], results[0])
+    assert first_result.value.topics[0] == "text 1"
     assert isinstance(results[1], Success)
-    assert results[1].value.topics[0] == "text 2"
+    second_result = cast(Success[kplib.KnowledgeResponse], results[1])
+    assert second_result.value.topics[0] == "text 2"
     assert isinstance(results[2], Failure)
     assert results[2].message == "Extraction failed"
 

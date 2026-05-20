@@ -11,7 +11,7 @@ to ensure behavioral parity across implementations.
 from dataclasses import field
 import os
 import tempfile
-from typing import assert_never, AsyncGenerator
+from typing import AsyncGenerator
 
 import pytest
 import pytest_asyncio
@@ -79,7 +79,7 @@ async def storage_provider_type(
             yield provider, request.param
             await provider.close()
         case _:
-            assert_never(request.param)
+            raise AssertionError(f"Unexpected storage provider type: {request.param!r}")
 
 
 def make_test_semantic_ref(ordinal: int = 0) -> SemanticRef:

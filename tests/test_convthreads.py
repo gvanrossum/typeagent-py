@@ -88,7 +88,7 @@ async def test_serialize_roundtrip(threads: ConversationThreads) -> None:
 
 @pytest.mark.asyncio
 async def test_deserialize_empty_data(threads: ConversationThreads) -> None:
-    data: ConversationThreadData = {}  # type: ignore[typeddict-item]
+    data: ConversationThreadData = {"threads": None}
     threads.deserialize(data)
     assert len(threads.threads) == 0
 
