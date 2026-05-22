@@ -10,9 +10,11 @@ import time
 from typing import Any
 
 try:
-    import coverage
+    import coverage as _coverage
 except ImportError:
-    coverage = None  # type: ignore[assignment]
+    coverage: Any | None = None
+else:
+    coverage = _coverage
 from dotenv import load_dotenv
 
 from mcp.server.fastmcp import Context, FastMCP

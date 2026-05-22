@@ -220,10 +220,18 @@ class ConversationMessage(IMessage):
         self.text_chunks[0] += content
 
     def serialize(self) -> ConversationMessageData:
-        # pydantic's __pydantic_serializer__ is not in type stubs
-        return self.__pydantic_serializer__.to_python(self, by_alias=True)  # type: ignore[attr-defined]
+        serializer = getattr(self, "__pydantic_serializer__", None)
+        if serializer is None or not hasattr(serializer, "to_python"):
+            raise TypeError("ConversationMessage is missing pydantic serializer")
+        data = serializer.to_python(self, by_alias=True)
+        assert isinstance(data, dict)
+        return data
 
     @staticmethod
     def deserialize(message_data: ConversationMessageData) -> "ConversationMessage":
-        # pydantic's __pydantic_validator__ is not in type stubs
-        return ConversationMessage.__pydantic_validator__.validate_python(message_data)  # type: ignore[attr-defined]
+        validator = getattr(ConversationMessage, "__pydantic_validator__", None)
+        if validator is None or not hasattr(validator, "validate_python"):
+            raise TypeError("ConversationMessage is missing pydantic validator")
+        message = validator.validate_python(message_data)
+        assert isinstance(message, ConversationMessage)
+        return message

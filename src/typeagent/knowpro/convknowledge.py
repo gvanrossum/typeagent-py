@@ -29,6 +29,7 @@ class KnowledgeExtractor:
     async def extract(self, message: str) -> typechat.Result[kplib.KnowledgeResponse]:
         result = await self.translator.translate(message)
         if isinstance(result, typechat.Success):
+            assert isinstance(result.value, kplib.KnowledgeResponse)
             if self.merge_action_knowledge:
                 self.merge_action_knowledge_into_response(result.value)
         else:
@@ -62,7 +63,7 @@ class KnowledgeExtractor:
                 + f"with 2 spaces of indentation and no properties with the value undefined:\n"
             )
 
-        translator._create_request_prompt = create_request_prompt
+        setattr(translator, "_create_request_prompt", create_request_prompt)
         return translator
 
     def merge_action_knowledge_into_response(

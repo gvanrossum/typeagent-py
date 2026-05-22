@@ -2,6 +2,7 @@
 # Licensed under the MIT License.
 
 from collections.abc import Callable, Iterable
+from typing import Protocol, runtime_checkable
 
 from ...aitools.embeddings import NormalizedEmbedding
 from ...knowpro.convsettings import MessageTextIndexSettings
@@ -37,7 +38,8 @@ async def build_message_index[
     await csi.message_index.add_messages(messages_list)
 
 
-class IMessageTextEmbeddingIndex(IMessageTextIndex):
+@runtime_checkable
+class IMessageTextEmbeddingIndex(IMessageTextIndex, Protocol):
     async def generate_embedding(self, text: str) -> NormalizedEmbedding: ...
 
     async def lookup_by_embedding(

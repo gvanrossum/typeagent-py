@@ -872,13 +872,27 @@ class MessagesFromKnowledgeExpr(QueryOpExpr[MessageAccumulator]):
     )
 
     async def eval(self, context: QueryEvalContext) -> MessageAccumulator:
-        knowledge = (
-            self.src_expr
-            if isinstance(self.src_expr, dict)
-            else await self.src_expr.eval(context)
-        )
+        evaluated: object
+        if isinstance(self.src_expr, dict):
+            evaluated = self.src_expr
+        else:
+            evaluated = await self.src_expr.eval(context)
+        assert isinstance(evaluated, dict)
+
+        knowledge_matches: dict[KnowledgeType, SemanticRefSearchResult] = {}
+        for key, value in evaluated.items():
+            if not isinstance(value, SemanticRefSearchResult):
+                continue
+            if key == "entity":
+                knowledge_matches["entity"] = value
+            elif key == "action":
+                knowledge_matches["action"] = value
+            elif key == "topic":
+                knowledge_matches["topic"] = value
+            elif key == "tag":
+                knowledge_matches["tag"] = value
         return await message_matches_from_knowledge_matches(
-            context.semantic_refs, knowledge
+            context.semantic_refs, knowledge_matches
         )
 
 

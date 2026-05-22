@@ -589,6 +589,7 @@ class TermSet:
             return
         if isinstance(terms, list):
             for term in terms:
+                assert isinstance(term, Term)
                 self.add_or_union(term)
         else:
             existing_term = self.terms.get(terms.text)

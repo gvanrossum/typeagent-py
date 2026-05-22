@@ -136,26 +136,24 @@ def create_context_prompt(context: AnswerContext) -> str:
     return "\n".join(prompt)
 
 
-def dictify(object: object) -> Any:
+def dictify(obj: object) -> Any:
     """Convert an object to a dictionary, recursively."""
     # NOTE: Can't use dataclasses.asdict() because not every object is a dataclass.
-    if ann := getattr(object.__class__, "__annotations__", None):
-        return {
-            k: dictify(v) for k in ann if (v := getattr(object, k, None)) is not None
-        }
-    elif isinstance(object, dict):
-        return {k: dictify(v) for k, v in object.items() if v is not None}
-    elif isinstance(object, list):
-        return [dictify(item) for item in object]
-    elif hasattr(object, "__dict__"):
-        return {
-            k: dictify(v) for k, v in object.__dict__.items() if v is not None
-        }  #  if not k.startswith("_")
+    if ann := getattr(obj.__class__, "__annotations__", None):
+        return {k: dictify(v) for k in ann if (v := getattr(obj, k, None)) is not None}
+    elif isinstance(obj, dict):
+        return {k: dictify(v) for k, v in obj.items() if v is not None}
+    elif isinstance(obj, list):
+        return [dictify(item) for item in obj]
     else:
-        if isinstance(object, float) and object.is_integer():
-            return int(object)
-        else:
-            return object
+        obj_dict = getattr(obj, "__dict__", None)
+        if isinstance(obj_dict, dict):
+            return {
+                k: dictify(v) for k, v in obj_dict.items() if v is not None
+            }  #  if not k.startswith("_")
+        if isinstance(obj, float) and obj.is_integer():
+            return int(obj)
+        return obj
 
 
 async def make_context[TMessage: IMessage, TIndex: ITermToSemanticRefIndex](
@@ -169,7 +167,7 @@ async def make_context[TMessage: IMessage, TIndex: ITermToSemanticRefIndex](
         context.messages = await get_relevant_messages_for_answer(
             conversation,
             search_result.message_matches,
-            options and options.messages_top_k,
+            options.messages_top_k if options is not None else None,
         )
 
     for knowledge_type, knowledge in search_result.knowledge_matches.items():
@@ -178,13 +176,13 @@ async def make_context[TMessage: IMessage, TIndex: ITermToSemanticRefIndex](
                 context.entities = await get_relevant_entities_for_answer(
                     conversation,
                     knowledge,
-                    options and options.entities_top_k,
+                    options.entities_top_k if options is not None else None,
                 )
             case "topic":
                 context.topics = await get_relevant_topics_for_answer(
                     conversation,
                     knowledge,
-                    options and options.topics_top_k,
+                    options.topics_top_k if options is not None else None,
                 )
             case _:
                 pass  # TODO: Actions and tags (once we support them)?

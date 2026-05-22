@@ -5,7 +5,7 @@ from collections.abc import Callable
 import copy
 from dataclasses import dataclass, replace
 import datetime
-from typing import cast, Literal, TypeGuard
+from typing import Literal, TypeGuard
 
 import typechat
 
@@ -115,7 +115,11 @@ async def search_conversation_with_language(
     debug_context: LanguageSearchDebugContext | None = None,
 ) -> typechat.Result[list[ConversationSearchResult]]:
     options = options or LanguageSearchOptions()
-    if debug_context and debug_context.use_compiled_search_query_exprs:
+    if (
+        debug_context
+        and debug_context.use_compiled_search_query_exprs is not None
+        and debug_context.use_search_query is not None
+    ):
         search_query = debug_context.use_search_query
         search_query_exprs = debug_context.use_compiled_search_query_exprs
     else:
@@ -129,6 +133,7 @@ async def search_conversation_with_language(
         )
         if not isinstance(lang_query_result, typechat.Success):
             return lang_query_result
+        assert isinstance(lang_query_result.value, LanguageQueryExpr)
         search_query = lang_query_result.value.query
         search_query_exprs = lang_query_result.value.query_expressions
 
@@ -202,7 +207,7 @@ async def search_query_expr_from_language(
     debug_context: LanguageSearchDebugContext | None = None,
 ) -> typechat.Result[LanguageQueryExpr]:
     options = options or LanguageSearchOptions()
-    if debug_context and debug_context.use_search_query:
+    if debug_context and debug_context.use_search_query is not None:
         # If the debug context has a use_search query, use it instead of translating.
         query = debug_context.use_search_query
     else:
@@ -215,6 +220,7 @@ async def search_query_expr_from_language(
         if not isinstance(query_result, typechat.Success):
             return query_result
         query = query_result.value
+        assert isinstance(query, SearchQuery)
     if debug_context:
         debug_context.search_query = query
     query_expressions = compile_search_query(
@@ -468,7 +474,9 @@ class SearchQueryCompiler:
                     svo_term_group.terms.append(object_term_group)
                 term_group.terms.append(svo_term_group)
             if len(term_group.terms) == 1:
-                term_group = cast(SearchTermGroup, term_group.terms[0])
+                first_term_group = term_group.terms[0]
+                assert isinstance(first_term_group, SearchTermGroup)
+                term_group = first_term_group
         else:
             term_group = self.compile_subject_and_verb(action_term)
 

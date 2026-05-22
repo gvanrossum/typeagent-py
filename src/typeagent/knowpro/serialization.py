@@ -9,7 +9,6 @@ import types
 from typing import (
     Annotated,
     Any,
-    cast,
     get_args,
     get_origin,
     Literal,
@@ -141,11 +140,11 @@ def to_conversation_file_data[TMessageData](
         )
 
     binary_data = ConversationBinaryData(embeddingsList=embeddings_list)
-    json_data = ConversationJsonData(
+    json_data: ConversationJsonData[TMessageData] = {
         **conversation_data,
-        fileHeader=file_header,
-        embeddingFileHeader=embedding_file_header,
-    )
+        "fileHeader": file_header,
+        "embeddingFileHeader": embedding_file_header,
+    }
     file_data = ConversationFileData(
         jsonData=json_data,
         binaryData=binary_data,
@@ -168,12 +167,12 @@ def serialize_object(arg: Any) -> Any | None:
     if arg is None:
         return None
 
-    # Require Pydantic dataclass
-    if not hasattr(arg, "__pydantic_serializer__"):
+    serializer = getattr(arg, "__pydantic_serializer__", None)
+    if serializer is None or not hasattr(serializer, "to_python"):
         raise TypeError(f"Object must be a Pydantic dataclass, got {type(arg)}")
 
     # Use Pydantic's serialization with aliases
-    return arg.__pydantic_serializer__.to_python(arg, by_alias=True)  # type: ignore
+    return serializer.to_python(arg, by_alias=True)
 
 
 # ----------------
@@ -236,17 +235,26 @@ def get_embeddings_from_binary_data(
         raise DeserializationError(
             f"Expected {count} embeddings, got {len(embeddings)}"
         )
-    data: dict[str, object] = cast(
-        dict[str, object], json_data
-    )  # We know it's a dict, but pyright doesn't.
-    # Traverse the keys to get to the embeddings.
-    for key in keys:
-        new_data = data.get(key)
-        if new_data is None or type(new_data) is not dict:
+    if keys == ("relatedTermsIndexData", "textEmbeddingData"):
+        related_terms_data = json_data.get("relatedTermsIndexData")
+        if related_terms_data is None:
             return 0
-        data = new_data
-    if "embeddings" in data:
-        data["embeddings"] = embeddings
+        text_embedding_data = related_terms_data.get("textEmbeddingData")
+        if text_embedding_data is None:
+            return 0
+        text_embedding_data["embeddings"] = embeddings
+        return count
+
+    if keys == ("messageIndexData", "indexData"):
+        message_index_data = json_data.get("messageIndexData")
+        if message_index_data is None:
+            return 0
+        index_data = message_index_data.get("indexData")
+        if index_data is None:
+            return 0
+        index_data["embeddings"] = embeddings
+        return count
+
     return count
 
 
@@ -308,6 +316,8 @@ def deserialize_object(typ: Any, obj: Any) -> Any:
 
     # Non-generic: primitives and dataclasses.
     if origin is None:
+        if not isinstance(typ, type):
+            raise TypeError(f"Unsupported origin-less type {typ}")
         if is_primitive(typ):
             if typ is int and type(obj) is float:
                 return int(obj)
@@ -320,13 +330,13 @@ def deserialize_object(typ: Any, obj: Any) -> Any:
             if not isinstance(obj, dict):
                 raise DeserializationError(f"Expected dict for {typ}, got {type(obj)}")
 
-            # Require Pydantic dataclass
-            if not hasattr(typ, "__pydantic_validator__"):
+            validator = getattr(typ, "__pydantic_validator__", None)
+            if validator is None or not hasattr(validator, "validate_python"):
                 raise TypeError(f"Type must be a Pydantic dataclass, got {typ}")
 
             try:
                 # Use Pydantic's validator with aliases
-                return typ.__pydantic_validator__.validate_python(obj)  # type: ignore
+                return validator.validate_python(obj)
             except Exception as e:
                 raise DeserializationError(
                     f"Pydantic validation failed for {typ.__name__}: {e}"

@@ -42,10 +42,16 @@ class TermToRelatedTermsMap(ITermToRelatedTerms):
     async def add_related_term(
         self, text: str, related_terms: Term | list[Term]
     ) -> None:
-        if not isinstance(related_terms, list):
-            related_terms = [related_terms]
+        related_term_list: list[Term] = []
+        if isinstance(related_terms, list):
+            for related_term in related_terms:
+                assert isinstance(related_term, Term)
+                related_term_list.append(related_term)
+        else:
+            assert isinstance(related_terms, Term)
+            related_term_list.append(related_terms)
         terms: dict[str, Term] = self.map.setdefault(text, {})
-        for related in related_terms:
+        for related in related_term_list:
             terms.setdefault(related.text, related)
 
     async def lookup_term(self, text: str) -> list[Term] | None:
