@@ -26,6 +26,6 @@ async def test_why_is_sky_blue(really_needs_auth: None):
     print(f"Chat agent response: {msg}")
 
     # Check that the response contains the expected keyword
-    assert (
-        "scatter" in msg.lower()
-    ), "Chat agent didn't respond with the expected message about scattering."
+    assert "scatter" in msg.lower(), (
+        "Chat agent didn't respond with the expected message about scattering."
+    )

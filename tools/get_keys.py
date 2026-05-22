@@ -133,7 +133,9 @@ class AzPIMClient:
                     "duration": options["expirationDuration"],
                     "end_date_time": None,
                 },
-                "start_date_time": options.get("startDateTime", datetime.now(timezone.utc)),
+                "start_date_time": options.get(
+                    "startDateTime", datetime.now(timezone.utc)
+                ),
             },
             "justification": "self elevate from typeagent script",
         }

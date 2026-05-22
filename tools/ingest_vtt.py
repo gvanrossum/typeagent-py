@@ -182,13 +182,13 @@ async def ingest_vtt_files(
             if verbose:
                 print(f"  {vtt_file}:")
                 print(
-                    f"    Duration: {duration:.2f} seconds ({duration/60:.2f} minutes)"
+                    f"    Duration: {duration:.2f} seconds ({duration / 60:.2f} minutes)"
                 )
                 print(f"    Speakers: {speakers if speakers else 'None detected'}")
 
         if verbose:
             print(
-                f"\nTotal duration: {total_duration:.2f} seconds ({total_duration/60:.2f} minutes)"
+                f"\nTotal duration: {total_duration:.2f} seconds ({total_duration / 60:.2f} minutes)"
             )
             print(
                 f"All speakers: {len(all_speakers)} ({all_speakers if all_speakers else 'None detected'})"

@@ -75,7 +75,9 @@ GRAPH_APP_ID = "00000003-0000-0000-c000-000000000000"
 # Mail.Read *delegated* permission GUID
 MAIL_READ_SCOPE_ID = "570282fd-fa5c-430d-a7fd-fc8dc98a9dca"
 
-type Credential = DefaultAzureCredential | InteractiveBrowserCredential | DeviceCodeCredential
+type Credential = (
+    DefaultAzureCredential | InteractiveBrowserCredential | DeviceCodeCredential
+)
 
 
 # ---------------------------------------------------------------------------
@@ -408,8 +410,7 @@ def _print_manual_setup_instructions(client_id: str) -> None:
     print()
     print("Manual setup instructions:")
     print(
-        "  1. Go to https://portal.azure.com"
-        " > Microsoft Entra ID > App registrations"
+        "  1. Go to https://portal.azure.com > Microsoft Entra ID > App registrations"
     )
     print(f"  2. Find or create an app with client ID: {client_id}")
     print(
@@ -548,7 +549,7 @@ def main() -> None:
         "--client-id",
         type=str,
         default=os.environ.get("OUTLOOK_CLIENT_ID"),
-        help=("User email address for login / login_hint " "(env: OUTLOOK_CLIENT_ID)"),
+        help=("User email address for login / login_hint (env: OUTLOOK_CLIENT_ID)"),
     )
     parser.add_argument(
         "--application-client-id",

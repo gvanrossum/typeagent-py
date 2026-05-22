@@ -122,17 +122,17 @@ async def test_related_terms_index_population_from_database(really_needs_auth):
         msg_collection2 = storage2.messages
         msg_count = await msg_collection2.size()
         print(f"Message collection size: {msg_count}")
-        assert msg_count == len(
-            test_messages
-        ), f"Expected {len(test_messages)} messages, got {msg_count}"
+        assert msg_count == len(test_messages), (
+            f"Expected {len(test_messages)} messages, got {msg_count}"
+        )
 
         # Check semantic ref collection size
         sem_ref_collection2 = storage2.semantic_refs
         sem_ref_count = await sem_ref_collection2.size()
         print(f"Semantic ref collection size: {sem_ref_count}")
-        assert sem_ref_count == len(
-            entity_refs
-        ), f"Expected {len(entity_refs)} semantic refs, got {sem_ref_count}"
+        assert sem_ref_count == len(entity_refs), (
+            f"Expected {len(entity_refs)} semantic refs, got {sem_ref_count}"
+        )
 
         # Create a test conversation and build related terms index
         from typeagent.knowpro.convsettings import ConversationSettings
@@ -160,17 +160,17 @@ async def test_related_terms_index_population_from_database(really_needs_auth):
 
         # The fuzzy index should have entries for all the terms that were added to the semantic ref index
         # This includes entity names and their types
-        assert (
-            fuzzy_index_size > 0
-        ), f"Related terms fuzzy index should have entries, got {fuzzy_index_size}"
+        assert fuzzy_index_size > 0, (
+            f"Related terms fuzzy index should have entries, got {fuzzy_index_size}"
+        )
 
         # We expect terms like: "artificial intelligence", "technology", "concept", "machine learning",
         # "subset of AI", "Python", "programming language"
         # So at least 7 unique terms
         expected_min_terms = 7
-        assert (
-            fuzzy_index_size >= expected_min_terms
-        ), f"Expected at least {expected_min_terms} terms in fuzzy index, got {fuzzy_index_size}"
+        assert fuzzy_index_size >= expected_min_terms, (
+            f"Expected at least {expected_min_terms} terms in fuzzy index, got {fuzzy_index_size}"
+        )
 
         print(
             f"✓ Related terms index successfully populated with {fuzzy_index_size} terms"

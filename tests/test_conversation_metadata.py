@@ -73,9 +73,9 @@ async def storage_provider(
 
 
 @pytest_asyncio.fixture
-async def storage_provider_memory() -> (
-    AsyncGenerator[SqliteStorageProvider[DummyMessage], None]
-):
+async def storage_provider_memory() -> AsyncGenerator[
+    SqliteStorageProvider[DummyMessage], None
+]:
     """Create an in-memory SqliteStorageProvider for testing conversation metadata."""
     embedding_model = create_test_embedding_model()
     embedding_settings = TextEmbeddingIndexSettings(embedding_model)

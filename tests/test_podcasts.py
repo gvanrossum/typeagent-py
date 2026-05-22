@@ -83,9 +83,9 @@ async def test_ingest_podcast(
     # Assertions for the loaded podcast
     assert pod2.name_tag == pod.name_tag, "Name tags do not match"
     assert pod2.tags == pod.tags, "Tags do not match"
-    assert (
-        await pod2.messages.size() == await pod.messages.size()
-    ), "Number of messages do not match"
+    assert await pod2.messages.size() == await pod.messages.size(), (
+        "Number of messages do not match"
+    )
 
     # Compare messages (simplified check since we can't iterate over async collections directly)
     pod_msgs_size = await pod.messages.size()

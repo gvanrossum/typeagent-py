@@ -450,9 +450,9 @@ async def test_property_index_population_from_semantic_refs(
         # Memory provider doesn't auto-populate property index when semantic refs are added
         # This is expected behavior - property index is populated differently
         final_sem_ref_count = await sem_ref_collection.size()
-        assert (
-            final_sem_ref_count == initial_sem_ref_count + 3
-        ), "All semantic refs should be added to memory"
+        assert final_sem_ref_count == initial_sem_ref_count + 3, (
+            "All semantic refs should be added to memory"
+        )
 
         # The memory provider would require manual property index population
         # which is typically done through the build_property_index function
@@ -461,9 +461,9 @@ async def test_property_index_population_from_semantic_refs(
         # For SQLite, property index is populated during storage provider creation
         # from persisted data, so we verify the data was persisted correctly
         final_sem_ref_count = await sem_ref_collection.size()
-        assert (
-            final_sem_ref_count == initial_sem_ref_count + 3
-        ), "All semantic refs should be persisted"
+        assert final_sem_ref_count == initial_sem_ref_count + 3, (
+            "All semantic refs should be persisted"
+        )
 
         # The property index in SQLite is populated from data during _populate_indexes_from_data
         # which is called during storage provider creation, not when items are added

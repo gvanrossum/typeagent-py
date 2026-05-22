@@ -77,9 +77,9 @@ async def test_message_text_index_population_from_database():
         msg_collection2 = storage2.messages
         msg_count = await msg_collection2.size()
         print(f"Message collection size: {msg_count}")
-        assert msg_count == len(
-            test_messages
-        ), f"Expected {len(test_messages)} messages, got {msg_count}"
+        assert msg_count == len(test_messages), (
+            f"Expected {len(test_messages)} messages, got {msg_count}"
+        )
 
         # Check message text index
         msg_text_index = storage2.message_text_index
@@ -103,14 +103,14 @@ async def test_message_text_index_population_from_database():
         # not that search works perfectly (which depends on embedding quality)
 
         # At minimum, the index should have some entries after population
-        assert (
-            index_size > 0
-        ), f"Message text index should have entries, got {index_size}"
+        assert index_size > 0, (
+            f"Message text index should have entries, got {index_size}"
+        )
 
         # Each message has one chunk, so we should have 3 entries
-        assert (
-            index_size == 3
-        ), f"Expected 3 index entries (one per message chunk), got {index_size}"
+        assert index_size == 3, (
+            f"Expected 3 index entries (one per message chunk), got {index_size}"
+        )
 
         print(f"✓ Message text index successfully populated with {index_size} entries")
 

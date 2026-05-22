@@ -122,47 +122,47 @@ async def test_property_index_population_from_database(really_needs_auth):
 
         # Test entity properties
         name_lookup = await prop_index.lookup_property("name", "john doe")
-        assert (
-            name_lookup is not None and len(name_lookup) > 0
-        ), "Entity name should be indexed"
+        assert name_lookup is not None and len(name_lookup) > 0, (
+            "Entity name should be indexed"
+        )
 
         type_lookup = await prop_index.lookup_property("type", "person")
-        assert (
-            type_lookup is not None and len(type_lookup) > 0
-        ), "Entity type should be indexed"
+        assert type_lookup is not None and len(type_lookup) > 0, (
+            "Entity type should be indexed"
+        )
 
         facet_name_lookup = await prop_index.lookup_property("facet.name", "role")
-        assert (
-            facet_name_lookup is not None and len(facet_name_lookup) > 0
-        ), "Facet name should be indexed"
+        assert facet_name_lookup is not None and len(facet_name_lookup) > 0, (
+            "Facet name should be indexed"
+        )
 
         facet_value_lookup = await prop_index.lookup_property("facet.value", "host")
-        assert (
-            facet_value_lookup is not None and len(facet_value_lookup) > 0
-        ), "Facet value should be indexed"
+        assert facet_value_lookup is not None and len(facet_value_lookup) > 0, (
+            "Facet value should be indexed"
+        )
 
         # Test action properties
         verb_lookup = await prop_index.lookup_property("verb", "discuss explain")
-        assert (
-            verb_lookup is not None and len(verb_lookup) > 0
-        ), "Action verbs should be indexed"
+        assert verb_lookup is not None and len(verb_lookup) > 0, (
+            "Action verbs should be indexed"
+        )
 
         subject_lookup = await prop_index.lookup_property("subject", "john doe")
-        assert (
-            subject_lookup is not None and len(subject_lookup) > 0
-        ), "Action subject should be indexed"
+        assert subject_lookup is not None and len(subject_lookup) > 0, (
+            "Action subject should be indexed"
+        )
 
         object_lookup = await prop_index.lookup_property("object", "technology")
-        assert (
-            object_lookup is not None and len(object_lookup) > 0
-        ), "Action object should be indexed"
+        assert object_lookup is not None and len(object_lookup) > 0, (
+            "Action object should be indexed"
+        )
 
         indirect_object_lookup = await prop_index.lookup_property(
             "indirectobject", "audience"
         )
-        assert (
-            indirect_object_lookup is not None and len(indirect_object_lookup) > 0
-        ), "Action indirect object should be indexed"
+        assert indirect_object_lookup is not None and len(indirect_object_lookup) > 0, (
+            "Action indirect object should be indexed"
+        )
 
         # Test tag properties
         tag_lookup = await prop_index.lookup_property("tag", "interview")

@@ -573,9 +573,9 @@ class TestRegressionPrevention:
 
         # Should find Magnus Carlsen among the results for chess-related queries
         result_texts = [term.text.lower() for term in chess_results]
-        assert any(
-            "magnus carlsen" in text for text in result_texts
-        ), f"Should find Magnus Carlsen in results: {result_texts}"
+        assert any("magnus carlsen" in text for text in result_texts), (
+            f"Should find Magnus Carlsen in results: {result_texts}"
+        )
 
         # Test the specific query that was failing
         magnus_results = await index.lookup_term(
@@ -808,9 +808,9 @@ class TestSqliteIndexesEdgeCases:
         for i, variant in enumerate(whitespace_variants):
             results = await index.lookup_term(variant)
             assert results is not None, f"Should find results for '{variant}'"
-            assert len(results) == len(
-                whitespace_variants
-            ), f"Expected {len(whitespace_variants)} results for '{variant}', got {len(results)}"
+            assert len(results) == len(whitespace_variants), (
+                f"Expected {len(whitespace_variants)} results for '{variant}', got {len(results)}"
+            )
             # All should map to the same normalized form, so should find all semantic refs
             expected_semrefs = set(range(1, len(whitespace_variants) + 1))
             actual_semrefs = {r.semantic_ref_ordinal for r in results}
@@ -841,21 +841,21 @@ class TestSqliteIndexesEdgeCases:
         # Both variants should resolve to the same normalized form
         results1 = await index.lookup_term(unicode_variants[0])
         results2 = await index.lookup_term(unicode_variants[1])
-        assert (
-            results1 is not None and results2 is not None
-        ), "Both Unicode forms should return results"
-        assert len(results1) == len(
-            results2
-        ), "NFC and NFD forms should normalize to same term"
+        assert results1 is not None and results2 is not None, (
+            "Both Unicode forms should return results"
+        )
+        assert len(results1) == len(results2), (
+            "NFC and NFD forms should normalize to same term"
+        )
         assert len(results1) == 2, f"Expected 2 results, got {len(results1)}"
 
         # Test higher plane Unicode roundtripping
         for i, term in enumerate(high_plane_terms):
             await index.add_term(term, 200 + i)
             results = await index.lookup_term(term)
-            assert (
-                results is not None
-            ), f"Should find results for higher plane Unicode: '{term}'"
+            assert results is not None, (
+                f"Should find results for higher plane Unicode: '{term}'"
+            )
             assert len(results) == 1, f"Should roundtrip higher plane Unicode: '{term}'"
             assert results[0].semantic_ref_ordinal == 200 + i
 
@@ -879,12 +879,12 @@ class TestSqliteIndexesEdgeCases:
         # All should normalize to same lowercase form
         for variant in case_variants:
             results = await index.lookup_term(variant)
-            assert (
-                results is not None
-            ), f"Should find results for case variant '{variant}'"
-            assert len(results) == len(
-                case_variants
-            ), f"Case variant '{variant}' should find all normalized forms"
+            assert results is not None, (
+                f"Should find results for case variant '{variant}'"
+            )
+            assert len(results) == len(case_variants), (
+                f"Case variant '{variant}' should find all normalized forms"
+            )
             expected_semrefs = set(range(300, 300 + len(case_variants)))
             actual_semrefs = {r.semantic_ref_ordinal for r in results}
             assert actual_semrefs == expected_semrefs
@@ -896,9 +896,9 @@ class TestSqliteIndexesEdgeCases:
 
         for variant in unicode_cases:
             results = await index.lookup_term(variant)
-            assert (
-                results is not None
-            ), f"Should find results for Unicode case variant '{variant}'"
-            assert len(results) == len(
-                unicode_cases
-            ), f"Unicode case variant '{variant}' should find all forms"
+            assert results is not None, (
+                f"Should find results for Unicode case variant '{variant}'"
+            )
+            assert len(results) == len(unicode_cases), (
+                f"Unicode case variant '{variant}' should find all forms"
+            )

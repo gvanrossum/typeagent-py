@@ -52,12 +52,12 @@ def test_extract_speaker_from_text():
 
     for input_text, expected_speaker, expected_text in test_cases:
         speaker, text = extract_speaker_from_text(input_text)
-        assert (
-            speaker == expected_speaker
-        ), f"Speaker mismatch for '{input_text}': got {speaker}, expected {expected_speaker}"
-        assert (
-            text == expected_text
-        ), f"Text mismatch for '{input_text}': got {text}, expected {expected_text}"
+        assert speaker == expected_speaker, (
+            f"Speaker mismatch for '{input_text}': got {speaker}, expected {expected_speaker}"
+        )
+        assert text == expected_text, (
+            f"Text mismatch for '{input_text}': got {text}, expected {expected_text}"
+        )
 
 
 def test_webvtt_timestamp_conversion():
@@ -72,9 +72,9 @@ def test_webvtt_timestamp_conversion():
 
     for timestamp, expected_seconds in test_cases:
         result = webvtt_timestamp_to_seconds(timestamp)
-        assert (
-            abs(result - expected_seconds) < 0.001
-        ), f"Timestamp conversion failed for {timestamp}: got {result}, expected {expected_seconds}"
+        assert abs(result - expected_seconds) < 0.001, (
+            f"Timestamp conversion failed for {timestamp}: got {result}, expected {expected_seconds}"
+        )
 
 
 @pytest.mark.skipif(

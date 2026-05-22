@@ -257,7 +257,9 @@ def test_create_chat_model_uses_azure_deployment_name(
     monkeypatch.setattr(
         model_adapters,
         "_make_azure_provider",
-        lambda endpoint_envvar="AZURE_OPENAI_ENDPOINT", api_key_envvar="AZURE_OPENAI_API_KEY": provider,
+        lambda endpoint_envvar="AZURE_OPENAI_ENDPOINT", api_key_envvar="AZURE_OPENAI_API_KEY": (
+            provider
+        ),
     )
     monkeypatch.setattr(
         "pydantic_ai.models.openai.OpenAIChatModel", FakeOpenAIChatModel

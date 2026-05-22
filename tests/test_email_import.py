@@ -97,6 +97,6 @@ class TestTextToChunks:
         text = "A" * 50 + "\n\n" + "B" * 50 + "\n\n" + "C" * 50
         result = _text_to_chunks(text, max_chunk_length=60)
         for chunk in result:
-            assert not chunk.startswith(
-                "\n\n"
-            ), f"chunk {chunk!r} has leading separator"
+            assert not chunk.startswith("\n\n"), (
+                f"chunk {chunk!r} has leading separator"
+            )

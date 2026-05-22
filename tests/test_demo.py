@@ -48,7 +48,7 @@ async def main(filename_prefix: str):
     t0 = time.time()
     pod = await podcast.Podcast.read_from_file(filename_prefix, settings)
     t1 = time.time()
-    print(f"Loading took {t1-t0:.3f} seconds")
+    print(f"Loading took {t1 - t0:.3f} seconds")
     assert pod is not None, "Failed to load podcast"
     assert isinstance(pod, podcast.Podcast), f"pod is {pod!r}"
 
@@ -59,9 +59,9 @@ async def main(filename_prefix: str):
     assert results is not None
     assert isinstance(results, list), f"results is {results!r}"
     assert len(results) > 0, f"results is {results!r}"
-    assert isinstance(
-        results[0], ScoredSemanticRefOrdinal
-    ), f"results[0] is {results[0]!r}"
+    assert isinstance(results[0], ScoredSemanticRefOrdinal), (
+        f"results[0] is {results[0]!r}"
+    )
 
     for scored_ord in results:
         ord = scored_ord.semantic_ref_ordinal
@@ -109,9 +109,9 @@ async def main(filename_prefix: str):
     assert isinstance(pod2, podcast.Podcast), f"pod2 is not Podcast but {type(pod2)!r}"
 
     await pod2.deserialize(ser1)
-    assert (
-        pod2.name_tag == pod.name_tag
-    ), f"pod2.name_tag is {pod2.name_tag!r} but expected {pod.name_tag!r}"
+    assert pod2.name_tag == pod.name_tag, (
+        f"pod2.name_tag is {pod2.name_tag!r} but expected {pod.name_tag!r}"
+    )
 
     ser2 = await pod2.serialize()
     assert ser2 is not None, "Failed to serialize podcast"

@@ -180,9 +180,9 @@ async def test_incremental_index_with_vtt_files():
         print(f"Now have {ref_count2} semantic refs (was {ref_count1})")
 
         # Should have more refs from the additional messages
-        assert (
-            ref_count2 > ref_count1
-        ), "Should have more semantic refs after adding messages"
+        assert ref_count2 > ref_count1, (
+            "Should have more semantic refs after adding messages"
+        )
 
         storage2 = await settings2.get_storage_provider()
         await storage2.close()
