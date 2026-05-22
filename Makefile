@@ -13,9 +13,9 @@ format: venv
 
 .PHONY: check
 check: venv
-	uv run --python 3.12 ty check src tests tools examples --error-on-warning
-	uv run --python 3.13 ty check src tests tools examples --error-on-warning
-	uv run --python 3.14 ty check src tests tools examples --error-on-warning
+	UV_PROJECT_ENVIRONMENT=.venv312 uv run --python 3.12 ty check src tests tools examples --error-on-warning
+	UV_PROJECT_ENVIRONMENT=.venv313 uv run --python 3.13 ty check src tests tools examples --error-on-warning
+	UV_PROJECT_ENVIRONMENT=.venv314 uv run --python 3.14 ty check src tests tools examples --error-on-warning
 
 .PHONY: test
 test: venv
