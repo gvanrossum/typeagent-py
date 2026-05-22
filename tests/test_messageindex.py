@@ -1,7 +1,6 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-from typing import cast
 from unittest.mock import AsyncMock, MagicMock
 
 import numpy as np
@@ -90,9 +89,9 @@ async def test_add_messages(
 
     # Check that add_text_locations_with_embeddings was called with expected locations
     # and one embedding per chunk.
-    mock_text_loc_index = cast(
-        MagicMock, cast(MessageTextIndex, message_text_index).text_location_index
-    )
+    assert isinstance(message_text_index, MessageTextIndex)
+    mock_text_loc_index = message_text_index.text_location_index
+    assert isinstance(mock_text_loc_index, MagicMock)
     call_args = mock_text_loc_index.add_text_locations_with_embeddings.call_args
     assert call_args is not None
     text_locations = call_args[0][0]  # First positional argument
@@ -107,9 +106,9 @@ async def test_add_messages(
 @pytest.mark.asyncio
 async def test_lookup_messages(message_text_index: IMessageTextEmbeddingIndex):
     """Test looking up messages in the MessageTextIndex."""
-    mock_text_loc_index = cast(
-        MagicMock, cast(MessageTextIndex, message_text_index).text_location_index
-    )
+    assert isinstance(message_text_index, MessageTextIndex)
+    mock_text_loc_index = message_text_index.text_location_index
+    assert isinstance(mock_text_loc_index, MagicMock)
     mock_text_loc_index.lookup_text.return_value = [
         MagicMock(text_location=TextLocation(1, 0), score=0.9),
         MagicMock(text_location=TextLocation(2, 0), score=0.8),
@@ -131,9 +130,9 @@ async def test_lookup_messages_in_subset(
     message_text_index: IMessageTextEmbeddingIndex,
 ):
     """Test looking up messages in a subset of the MessageTextIndex."""
-    mock_text_loc_index = cast(
-        MagicMock, cast(MessageTextIndex, message_text_index).text_location_index
-    )
+    assert isinstance(message_text_index, MessageTextIndex)
+    mock_text_loc_index = message_text_index.text_location_index
+    assert isinstance(mock_text_loc_index, MagicMock)
     mock_text_loc_index.lookup_text_in_subset.return_value = [
         MagicMock(text_location=TextLocation(1, 0), score=0.9),
     ]
@@ -176,9 +175,9 @@ async def test_serialize(message_text_index: IMessageTextEmbeddingIndex):
     """Test serialization of the MessageTextIndex."""
     serialized = await message_text_index.serialize()
     assert serialized.get("indexData") == {"mock": "data"}
-    mock_text_loc_index = cast(
-        MagicMock, cast(MessageTextIndex, message_text_index).text_location_index
-    )
+    assert isinstance(message_text_index, MessageTextIndex)
+    mock_text_loc_index = message_text_index.text_location_index
+    assert isinstance(mock_text_loc_index, MagicMock)
     mock_text_loc_index.serialize.assert_called_once()
 
 
@@ -189,9 +188,9 @@ async def test_deserialize(message_text_index: IMessageTextEmbeddingIndex):
         indexData=TextToTextLocationIndexData(textLocations=[], embeddings=None)
     )
     await message_text_index.deserialize(data)
-    mock_text_loc_index = cast(
-        MagicMock, cast(MessageTextIndex, message_text_index).text_location_index
-    )
+    assert isinstance(message_text_index, MessageTextIndex)
+    mock_text_loc_index = message_text_index.text_location_index
+    assert isinstance(mock_text_loc_index, MagicMock)
     mock_text_loc_index.deserialize.assert_called_once_with(
         dict(textLocations=[], embeddings=None)
     )

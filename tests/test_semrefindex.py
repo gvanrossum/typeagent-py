@@ -232,11 +232,10 @@ async def test_add_entity(
     await add_entity(entity, semantic_refs, semantic_ref_index, 0)
 
     assert await semantic_refs.size() == 1
-    assert (await semantic_refs.get_item(0)).knowledge.knowledge_type == "entity"
-    assert (
-        cast(ConcreteEntity, (await semantic_refs.get_item(0)).knowledge).name
-        == "ExampleEntity"
-    )
+    semantic_ref = await semantic_refs.get_item(0)
+    assert semantic_ref.knowledge.knowledge_type == "entity"
+    assert isinstance(semantic_ref.knowledge, ConcreteEntity)
+    assert semantic_ref.knowledge.name == "ExampleEntity"
 
     result = await semantic_ref_index.lookup_term("ExampleEntity")
     assert result is not None
@@ -264,10 +263,10 @@ async def test_add_topic(
     await add_topic(Topic(text=topic), semantic_refs, semantic_ref_index, 0)
 
     assert await semantic_refs.size() == 1
-    assert (await semantic_refs.get_item(0)).knowledge.knowledge_type == "topic"
-    assert (
-        cast(Topic, (await semantic_refs.get_item(0)).knowledge).text == "ExampleTopic"
-    )
+    semantic_ref = await semantic_refs.get_item(0)
+    assert semantic_ref.knowledge.knowledge_type == "topic"
+    assert isinstance(semantic_ref.knowledge, Topic)
+    assert semantic_ref.knowledge.text == "ExampleTopic"
 
     result = await semantic_ref_index.lookup_term("ExampleTopic")
     assert result is not None
@@ -295,11 +294,10 @@ async def test_add_action(
     await add_action(action, semantic_refs, semantic_ref_index, 0)
 
     assert await semantic_refs.size() == 1
-    assert (await semantic_refs.get_item(0)).knowledge.knowledge_type == "action"
-    assert cast(Action, (await semantic_refs.get_item(0)).knowledge).verbs == [
-        "run",
-        "jump",
-    ]
+    semantic_ref = await semantic_refs.get_item(0)
+    assert semantic_ref.knowledge.knowledge_type == "action"
+    assert isinstance(semantic_ref.knowledge, Action)
+    assert semantic_ref.knowledge.verbs == ["run", "jump"]
 
     result = await semantic_ref_index.lookup_term("run jump")
     assert result is not None
