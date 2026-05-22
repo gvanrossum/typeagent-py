@@ -42,6 +42,7 @@ async def test_extract_knowledge_from_text(
     """Test extracting knowledge from a single text input."""
     result = await extract_knowledge_from_text(mock_knowledge_extractor, "test text")
     assert isinstance(result, Success)
+    assert isinstance(result.value, kplib.KnowledgeResponse)
     assert result.value.topics[0] == "test text"
 
     failure_result = await extract_knowledge_from_text(
