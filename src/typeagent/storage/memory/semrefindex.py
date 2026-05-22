@@ -43,7 +43,8 @@ type KnowledgeValidator = Callable[
 
 
 async def add_batch_to_semantic_ref_index[
-    TMessage: IMessage, TTermToSemanticRefIndex: ITermToSemanticRefIndex
+    TMessage: IMessage,
+    TTermToSemanticRefIndex: ITermToSemanticRefIndex,
 ](
     conversation: IConversation[TMessage, TTermToSemanticRefIndex],
     batch: list[TextLocation],
@@ -80,7 +81,8 @@ async def add_batch_to_semantic_ref_index[
 
 
 async def add_batch_to_semantic_ref_index_from_list[
-    TMessage: IMessage, TTermToSemanticRefIndex: ITermToSemanticRefIndex
+    TMessage: IMessage,
+    TTermToSemanticRefIndex: ITermToSemanticRefIndex,
 ](
     conversation: IConversation[TMessage, TTermToSemanticRefIndex],
     messages: list[TMessage],
@@ -771,7 +773,8 @@ async def build_semantic_ref_index[TM: IMessage](
 
 
 async def add_to_semantic_ref_index[
-    TMessage: IMessage, TTermToSemanticRefIndex: ITermToSemanticRefIndex
+    TMessage: IMessage,
+    TTermToSemanticRefIndex: ITermToSemanticRefIndex,
 ](
     conversation: IConversation[TMessage, TTermToSemanticRefIndex],
     settings: SemanticRefIndexSettings,

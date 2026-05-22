@@ -213,7 +213,8 @@ class MergedEntity(MergedKnowledge):
 
 
 async def get_relevant_messages_for_answer[
-    TMessage: IMessage, TIndex: ITermToSemanticRefIndex
+    TMessage: IMessage,
+    TIndex: ITermToSemanticRefIndex,
 ](
     conversation: IConversation[TMessage, TIndex],
     message_matches: list[ScoredMessageOrdinal],
@@ -249,12 +250,12 @@ async def get_relevant_topics_for_answer(
     top_k: int | None = None,
 ) -> list[RelevantKnowledge]:
     assert conversation.semantic_refs is not None, "Semantic refs must not be None"
-    scored_topics: Iterable[Scored[SemanticRef]] = (
-        await get_scored_semantic_refs_from_ordinals_iter(
-            conversation.semantic_refs,
-            search_result.semantic_ref_matches,
-            "topic",
-        )
+    scored_topics: Iterable[
+        Scored[SemanticRef]
+    ] = await get_scored_semantic_refs_from_ordinals_iter(
+        conversation.semantic_refs,
+        search_result.semantic_ref_matches,
+        "topic",
     )
     merged_topics = merge_scored_topics(scored_topics, True)
     candidate_topics: Iterable[Scored[MergedTopic]] = merged_topics.values()

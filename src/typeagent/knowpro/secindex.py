@@ -56,7 +56,8 @@ async def build_secondary_indexes[
 
 
 async def build_transient_secondary_indexes[
-    TMessage: IMessage, TTermToSemanticRefIndex: ITermToSemanticRefIndex
+    TMessage: IMessage,
+    TTermToSemanticRefIndex: ITermToSemanticRefIndex,
 ](
     conversation: IConversation[TMessage, TTermToSemanticRefIndex],
     settings: ConversationSettings,

@@ -261,7 +261,6 @@ def compile_search_filter(
 
 
 class SearchQueryCompiler:
-
     def __init__(
         self,
         conversation: IConversation,

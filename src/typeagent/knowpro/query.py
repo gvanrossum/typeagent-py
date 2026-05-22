@@ -200,8 +200,10 @@ async def lookup_term(
             semantic_ref_index,
             term,
             semantic_refs,
-            lambda m, _: (not knowledge_type or m.knowledge_type == knowledge_type)
-            and ranges_in_scope.is_range_in_scope(m.range),
+            lambda m, _: (
+                (not knowledge_type or m.knowledge_type == knowledge_type)
+                and ranges_in_scope.is_range_in_scope(m.range)
+            ),
         )
     return await semantic_ref_index.lookup_term(term.text)
 
@@ -969,7 +971,6 @@ class MatchMessagesBooleanExpr(IQueryOpExpr[MessageAccumulator]):
 
 @dataclass
 class MatchMessagesOrExpr(MatchMessagesBooleanExpr):
-
     async def eval(self, context: QueryEvalContext) -> MessageAccumulator:
         self._begin_match(context)
 
@@ -995,7 +996,6 @@ class MatchMessagesOrExpr(MatchMessagesBooleanExpr):
 
 @dataclass
 class MatchMessagesAndExpr(MatchMessagesBooleanExpr):
-
     async def eval(self, context: QueryEvalContext) -> MessageAccumulator:
         self._begin_match(context)
 
@@ -1035,7 +1035,6 @@ class MatchMessagesAndExpr(MatchMessagesBooleanExpr):
 
 @dataclass
 class MatchMessagesOrMaxExpr(MatchMessagesOrExpr):
-
     async def eval(self, context: QueryEvalContext) -> MessageAccumulator:
         matches = await super().eval(context)
         max_hit_count = matches.get_max_hit_count()

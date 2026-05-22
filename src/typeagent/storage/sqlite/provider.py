@@ -252,9 +252,7 @@ class SqliteStorageProvider[TMessage: interfaces.IMessage](
             tags = None
             extras = {}
 
-        actual_embedding_name = (
-            self.message_text_index_settings.embedding_index_settings.embedding_model.model_name
-        )
+        actual_embedding_name = self.message_text_index_settings.embedding_index_settings.embedding_model.model_name
 
         metadata_embedding_name = (
             self._metadata.embedding_model
@@ -518,9 +516,7 @@ class SqliteStorageProvider[TMessage: interfaces.IMessage](
             # Insert default values if no metadata exists
             name_tag = self._metadata.name_tag if self._metadata else "conversation"
             schema_version = str(CONVERSATION_SCHEMA_VERSION)
-            actual_embedding_name = (
-                self.message_text_index_settings.embedding_index_settings.embedding_model.model_name
-            )
+            actual_embedding_name = self.message_text_index_settings.embedding_index_settings.embedding_model.model_name
 
             metadata_kwds: dict[str, str | None] = {
                 "name_tag": name_tag or "conversation",

@@ -13,7 +13,8 @@ from .interfaces import (
 
 
 async def get_time_range_prompt_section_for_conversation[
-    TMessage: IMessage, TIndex: ITermToSemanticRefIndex
+    TMessage: IMessage,
+    TIndex: ITermToSemanticRefIndex,
 ](
     conversation: IConversation[TMessage, TIndex],
 ) -> typechat.PromptSection | None:
@@ -31,7 +32,8 @@ async def get_time_range_prompt_section_for_conversation[
 
 
 async def get_time_range_for_conversation[
-    TMessage: IMessage, TIndex: ITermToSemanticRefIndex
+    TMessage: IMessage,
+    TIndex: ITermToSemanticRefIndex,
 ](
     conversation: IConversation[TMessage, TIndex],
 ) -> DateRange | None:

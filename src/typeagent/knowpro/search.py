@@ -140,9 +140,9 @@ async def search_conversation_knowledge(
     options = options or SearchOptions()
     if not is_conversation_searchable(conversation):
         return None
-    assert (
-        conversation.secondary_indexes is not None
-    ), "Conversation secondary indexes must be initialized before searching"
+    assert conversation.secondary_indexes is not None, (
+        "Conversation secondary indexes must be initialized before searching"
+    )
     compiler = QueryCompiler(conversation, conversation.secondary_indexes)
     knowledge_query = await compiler.compile_knowledge_query(
         search_term_group, when_filter, options
@@ -183,9 +183,9 @@ async def run_query[T](
     query: IQueryOpExpr[T],
 ) -> T:
     secondary_indexes = conversation.secondary_indexes
-    assert (
-        secondary_indexes is not None
-    ), "Conversation secondary indexes must be initialized before running queries"
+    assert secondary_indexes is not None, (
+        "Conversation secondary indexes must be initialized before running queries"
+    )
     return await query.eval(
         QueryEvalContext(
             conversation,

@@ -55,9 +55,9 @@ class Transcript(ConversationBase[TranscriptMessage]):
 
         secondary_indexes = self._get_secondary_indexes()
         if secondary_indexes.term_to_related_terms_index is not None:
-            data["relatedTermsIndexData"] = (
-                await secondary_indexes.term_to_related_terms_index.serialize()
-            )
+            data[
+                "relatedTermsIndexData"
+            ] = await secondary_indexes.term_to_related_terms_index.serialize()
         if secondary_indexes.threads:
             data["threadData"] = secondary_indexes.threads.serialize()
         if secondary_indexes.message_index is not None:
@@ -102,16 +102,16 @@ class Transcript(ConversationBase[TranscriptMessage]):
             term_to_related_terms_index = secondary_indexes.term_to_related_terms_index
             if term_to_related_terms_index is not None:
                 # Assert empty before deserializing
-                assert (
-                    await term_to_related_terms_index.aliases.is_empty()
-                ), "Term to related terms index must be empty before deserializing"
+                assert await term_to_related_terms_index.aliases.is_empty(), (
+                    "Term to related terms index must be empty before deserializing"
+                )
                 await term_to_related_terms_index.deserialize(related_terms_index_data)
 
         thread_data = transcript_data.get("threadData")
         if thread_data is not None:
-            assert (
-                self.settings is not None
-            ), "Settings must be initialized for deserialization"
+            assert self.settings is not None, (
+                "Settings must be initialized for deserialization"
+            )
             secondary_indexes = self._get_secondary_indexes()
             secondary_indexes.threads = ConversationThreads(
                 self.settings.thread_settings
@@ -121,9 +121,9 @@ class Transcript(ConversationBase[TranscriptMessage]):
         message_index_data = transcript_data.get("messageIndexData")
         if message_index_data is not None:
             secondary_indexes = self._get_secondary_indexes()
-            assert (
-                secondary_indexes.message_index is not None
-            ), "Message index should be initialized"
+            assert secondary_indexes.message_index is not None, (
+                "Message index should be initialized"
+            )
             await secondary_indexes.message_index.deserialize(message_index_data)
 
         # Don't rebuild aliases/synonyms since they were deserialized from relatedTermsIndexData

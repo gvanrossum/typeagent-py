@@ -135,7 +135,8 @@ class SqliteTimestampToTextRangeIndex(interfaces.ITimestampToTextRangeIndex):
                 message_ordinal=msg_id, chunk_ordinal=0
             )
             text_range = interfaces.TextRange(
-                start=text_location, end=None  # Point range
+                start=text_location,
+                end=None,  # Point range
             )
             results.append(
                 interfaces.TimestampedTextRange(timestamp=timestamp, range=text_range)

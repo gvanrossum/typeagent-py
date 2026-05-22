@@ -119,9 +119,9 @@ class ConversationBase(
 
     def _get_secondary_indexes(self) -> IConversationSecondaryIndexes[TMessage]:
         """Get secondary indexes, asserting they are initialized."""
-        assert (
-            self.secondary_indexes is not None
-        ), f"Use await {self.__class__.__name__}.create() to create an initialized instance"
+        assert self.secondary_indexes is not None, (
+            f"Use await {self.__class__.__name__}.create() to create an initialized instance"
+        )
         return self.secondary_indexes
 
     async def add_metadata_to_index(self) -> None:

@@ -33,9 +33,7 @@ class EmailMemorySettings:
             self.language_model, answer_response_schema.AnswerResponse
         )
         self.conversation_settings = conversation_settings
-        self.conversation_settings.semantic_ref_index_settings.auto_extract_knowledge = (
-            True
-        )
+        self.conversation_settings.semantic_ref_index_settings.auto_extract_knowledge = True
 
 
 @dataclass
