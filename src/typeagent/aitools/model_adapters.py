@@ -198,6 +198,19 @@ def _needs_azure_fallback(provider: str) -> bool:
     )
 
 
+def _normalize_chat_model_spec(model_spec: str) -> str:
+    """Map legacy ``openai:`` chat specs to ``openai-chat:``.
+
+    PydanticAI v2 changes the default ``openai:`` behavior to Responses API.
+    We explicitly normalize to ``openai-chat:`` to keep Chat Completions
+    behavior and avoid deprecation warnings.
+    """
+    provider, sep, model_name = model_spec.partition(":")
+    if provider == "openai" and sep and model_name:
+        return f"openai-chat:{model_name}"
+    return model_spec
+
+
 def _make_azure_provider(
     endpoint_envvar: str = "AZURE_OPENAI_ENDPOINT",
     api_key_envvar: str = "AZURE_OPENAI_API_KEY",
@@ -298,7 +311,7 @@ def create_chat_model(
             provider=_make_azure_provider(),
         )
     else:
-        model = infer_model(model_spec)
+        model = infer_model(_normalize_chat_model_spec(model_spec))
     return PydanticAIChatModel(model, retrier)
 
 
