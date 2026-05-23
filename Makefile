@@ -11,6 +11,11 @@ format: venv
 	uv run isort src tests tools examples $(FLAGS)
 	uv run ruff format src tests tools examples $(FLAGS)
 
+.PHONY: format-check
+format-check: venv
+	uv run isort --check src tests tools examples $(FLAGS)
+	uv run ruff format --check src tests tools examples $(FLAGS)
+
 .PHONY: check
 check: venv
 	UV_PROJECT_ENVIRONMENT=.venv312 uv run --python 3.12 ty check src tests tools examples --error-on-warning
