@@ -11,6 +11,7 @@
 if "%~1"=="" goto help
 
 if /I "%~1"=="format" goto format
+if /I "%~1"=="format-check" goto format-check
 if /I "%~1"=="check" goto check
 if /I "%~1"=="test" goto test
 if /I "%~1"=="coverage" goto coverage
@@ -32,10 +33,32 @@ uv run isort src tests tools examples
 uv run ruff format src tests tools examples
 goto end
 
+:format-check
+if not exist ".venv\" call make.bat venv
+echo Checking formatting...
+uv run isort --check src tests tools examples
+uv run ruff format --check src tests tools examples
+goto end
+
 :check
 if not exist ".venv\" call make.bat venv
-echo Running type checks...
-uv run ty check src tests tools examples
+echo Running type checks for Python 3.12/3.13/3.14...
+setlocal
+set "UV_PROJECT_ENVIRONMENT=.venv312"
+uv run --python 3.12 ty check src tests tools examples --error-on-warning
+if errorlevel 1 (
+	endlocal
+	goto end
+)
+set "UV_PROJECT_ENVIRONMENT=.venv313"
+uv run --python 3.13 ty check src tests tools examples --error-on-warning
+if errorlevel 1 (
+	endlocal
+	goto end
+)
+set "UV_PROJECT_ENVIRONMENT=.venv314"
+uv run --python 3.14 ty check src tests tools examples --error-on-warning
+endlocal
 goto end
 
 :test
@@ -102,7 +125,7 @@ if exist .pytest_cache rmdir /s /q .pytest_cache
 goto end
 
 :help
-echo Usage: .\make [format^|check^|test^|coverage^|demo^|build^|venv^|sync^|install-uv^|clean^|help]
+echo Usage: .\make [format^|format-check^|check^|test^|coverage^|demo^|build^|venv^|sync^|install-uv^|clean^|help]
 goto end
 
 :end
